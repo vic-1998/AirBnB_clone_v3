@@ -36,7 +36,7 @@ def not_found(error):
     Returns:
         [json]: [error message]
     """
-    return make_response(jsonify({'error': 'Not found'}), 404)
+    return {"error": "Not found"}, 404
 
 if __name__ == '__main__':
     app.run(host=os.getenv('HBNB_API_HOST', '0.0.0.0'),
