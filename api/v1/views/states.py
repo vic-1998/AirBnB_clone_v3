@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""a"""
+"""Create a new view for State"""
 
 from models import storage
 from models.state import State
