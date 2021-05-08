@@ -27,7 +27,7 @@ def close(exception):
     storage.close()
 
 @app.errorhandler(404)
-def not_found(error):
+def handler_error(error):
     """ if not found return a Json string with error
 
     Args:
