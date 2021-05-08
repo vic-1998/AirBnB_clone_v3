@@ -61,7 +61,7 @@ def delcity(city_id):
         abort(404)
 
 
-@app_views.route('/states/<string:state_id>/cities',
+@app_views.route('/states/<string:state_id>/cities/',
                  methods=['POST'], strict_slashes=False)
 def postCity(state_id):
     """create a new city"""
