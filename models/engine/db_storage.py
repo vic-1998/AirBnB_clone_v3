@@ -77,14 +77,11 @@ class DBStorage:
 
     def get(self, cls, id):
         """ gets some stuff """
-        from models import storage
-        data = storage.all(cls)
-        st = cls.__name__ + "." + id
-        if st in data:
-            return data.get(st)
-        else:
-            key = "{}.{}".format(cls, id)
-            return self.all(cls).get(key) if self.all(cls).get(key) else None
+        if cls and id:
+            fetch = "{}.{}".format(cls, id)
+            all_obj = self.all(cls)
+            return all_obj.get(fetch)
+        return None
 
     def count(self, cls=None):
         """ counts some stuff """
