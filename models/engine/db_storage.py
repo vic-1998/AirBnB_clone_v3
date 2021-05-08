@@ -83,7 +83,8 @@ class DBStorage:
         if st in data:
             return data.get(st)
         else:
-            return None
+            key = "{}.{}".format(cls, id)
+            return self.all(cls).get(key) if self.all(cls).get(key) else None
 
     def count(self, cls=None):
         """ counts some stuff """
