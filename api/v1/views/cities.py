@@ -1,4 +1,6 @@
 #!/usr/bin/python3
+"""[viewer cities by and cities by states_id]
+"""
 
 from flask import Flask
 from flask.helpers import make_response
@@ -77,3 +79,19 @@ def postCity(state_id):
     new_City = City(**data)
     storage.save()
     return make_response(jsonify(new_City.to_dict()), 201)
+
+
+@app_views.route('/cities/<string:city_id>', methods=['PUT'],
+                 strict_slashes=False)
+def putCity(city_id):
+    """update a City"""
+    city = storage.get("City", city_id)
+    if city is None:
+        abort(404)
+    if not request.get_json():
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+    for attr, val in request.get_json().items():
+        if attr not in ['id', 'created_at', 'updated_at']:
+            setattr(city, attr, val)
+    city.save()
+    return jsonify(city.to_dict())
