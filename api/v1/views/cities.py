@@ -62,4 +62,3 @@ def cities(city_id):
         city_obj.bm_update(res_json)
         return jsonify(city_obj.to_json()), 200
         
-        
