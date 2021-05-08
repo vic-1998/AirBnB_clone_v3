@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-
+"""File to connect to API"""
 from flask import Flask
 from flask.globals import request
 from flask.json import jsonify
@@ -18,6 +18,7 @@ data = {
 
 @app_views.route('/status', strict_slashes=False)
 def status():
+    """Return Status"""
     return jsonify({"status": "OK"})
 
 
