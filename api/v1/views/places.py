@@ -17,10 +17,11 @@ from models.user import User
 def getPlaces(city_id=None):
     """get all places
     """
-    if city_id is None:
+    city = storage.get("City", city_id)
+    if city is None:
         abort(404)
     places = []
-    for place in storage.all('Place').values():
+    for place in city.places:
         places.append(place.to_dict())
     return jsonify(places)
 
