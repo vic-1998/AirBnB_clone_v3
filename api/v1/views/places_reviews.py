@@ -37,15 +37,12 @@ def get_review(review_id):
                  strict_slashes=False)
 def delete_review(review_id):
     """deletes a state"""
-    empty_dict = {}
-
-    try:
-        json_review = storage.get(Review, review_id)
-        json_review.delete()
+    review = storage.get(Review, review_id)
+    if review:
+        storage.delete(review)
         storage.save()
-        return jsonify(empty_dict), 200
-    except Exception:
-        abort(404)
+        return({}, 200)
+    abort(404)
 
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
