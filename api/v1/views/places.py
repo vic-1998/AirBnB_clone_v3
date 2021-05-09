@@ -14,7 +14,7 @@ from models.user import User
 
 @app_views.route('/cities/<city_id>/places',
                  methods=['GET'], strict_slashes=False)
-def getPlaces(city_id):
+def getPlaces(city_id=None):
     """get all places
     """
     if city_id is None:
@@ -27,33 +27,34 @@ def getPlaces(city_id):
 
 @app_views.route('/places/<string:place_id>',
                  methods=['GET'], strict_slashes=False)
-def getPlaceId(place_id):
+def getPlaceId(place_id=None):
     """get a place by id
 
     Args:
         place_id ([string]): [place id information]
     """
     place = storage.get('Place', place_id)
-    if not place:
+    if place is None:
         abort(404)
-    return jsonify(place.to_dict())
+    else:
+        return jsonify(place.to_dict())
 
 
 @app_views.route('/places/<string:place_id>',
                  methods=['DELETE'], strict_slashes=False)
-def delPlace(place_id):
+def delPlace(place_id=None):
     """[delete a place]
 
     Args:
         place_id ([string]): [identifier of place]
     """
-    place = storage.get("Review", place_id)
-    if place:
-        place.delete()
-        storage.save()
-        return {}, 200
-    else:
+    json_places = storage.get('Place', place_id)
+    if json_places is None:
         abort(404)
+    else:
+        json_places.delete()
+        storage.save()
+        return jsonify({}), 200
 
 
 @app_views.route('/cities/<string:city_id>/places',
@@ -94,7 +95,7 @@ def putPlace(place_id=None):
         place_id ([strings]): [identifier of place]
     """
     place = storage.get('Place', place_id)
-    if not place:
+    if place is None:
         abort(404)
 
     if not request.get_json():
