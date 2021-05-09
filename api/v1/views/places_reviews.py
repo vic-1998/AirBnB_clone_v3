@@ -3,10 +3,10 @@
 
 from models import storage
 from models.user import User
-from models.state import State
+from models.place import Place
 from models.review import Review
 from api.v1.views import app_views
-from flask import jsonify, request, make_response, abort
+from flask import abort, jsonify, make_response, request
 
 
 @app_views.route('/places/<string:place_id>/reviews',
