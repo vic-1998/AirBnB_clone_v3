@@ -13,7 +13,7 @@ from flask import abort, jsonify, make_response, request
                  methods=['GET'], strict_slashes=False)
 def getReviews(place_id):
     """Get a Reviews"""
-    place = storage.get("Place", place_id)
+    place = storage.get(Place, place_id)
     if place is None:
         abort(404)
     place = place.reviews
@@ -40,7 +40,7 @@ def delete_review(review_id):
     empty_dict = {}
 
     try:
-        json_review = storage.get("Review", review_id)
+        json_review = storage.get(Review, review_id)
         json_review.delete()
         storage.save()
         return jsonify(empty_dict), 200
@@ -52,7 +52,7 @@ def delete_review(review_id):
                  strict_slashes=False)
 def post_review(place_id):
     """create a new review"""
-    if storage.get("Place", place_id) is None:
+    if storage.get(Place, place_id) is None:
         abort(404)
     data = request.get_json()
     if data is None:
