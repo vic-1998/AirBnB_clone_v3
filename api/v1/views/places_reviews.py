@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Create a new view for State"""
+"""Create a new view for places reviews.py"""
 
 from models import storage
 from models.user import User
@@ -52,23 +52,24 @@ def delete_review(review_id):
                  strict_slashes=False)
 def post_review(place_id):
     """create a new review"""
-    place = storage.get("Place", place_id)
-    if place is None:
+    if storage.get("Place", place_id) is None:
         abort(404)
-    if not request.get_json():
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    kwargs = request.get_json()
-    if 'user_id' not in kwargs:
-        return make_response(jsonify({'error': 'Missing user_id'}), 400)
-    user = storage.get("User", kwargs['user_id'])
-    if user is None:
+
+    data = request.get_json()
+    if data is None:
+        return jsonify({"error": "Not a JSON"}), 400
+    if "user_id" not in data:
+        return jsonify({"error": "Missing user_id"}), 400
+    if storage.get("User", data["user_id"]) is None:
         abort(404)
-    if 'text' not in kwargs:
-        return make_response(jsonify({'error': 'Missing text'}), 400)
-    kwargs['place_id'] = place_id
-    review = Review(**kwargs)
-    review.save()
-    return make_response(jsonify(review.to_dict()), 201)
+    if "text" not in data:
+        return jsonify({"error": "Missing text"}), 400
+
+    new_review = Review(user_id=data["user_id"],
+                        place_id=place_id,
+                        text=data["text"])
+    storage.save()
+    return jsonify(new_review.to_dict()), 201
 
 
 @app_views.route('/reviews/<string:review_id>', methods=['PUT'],
