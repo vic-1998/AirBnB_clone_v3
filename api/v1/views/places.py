@@ -35,7 +35,8 @@ def getPlaceId(place_id=None):
     place = storage.get('Place', place_id)
     if place is None:
         abort(404)
-    return jsonify(place.to_dict())
+    else:
+        return jsonify(place.to_dict())
 
 
 @app_views.route('/places/<string:place_id>',
@@ -46,15 +47,13 @@ def delPlace(place_id=None):
     Args:
         place_id ([string]): [identifier of place]
     """
-    empty_dict = {}
-
-    try:
-        json_places = storage.get('Place', place_id)
+    json_places = storage.get('Place', place_id)
+    if json_places is None:
+        abort(404)
+    else:
         json_places.delete()
         storage.save()
-        return jsonify(empty_dict), 200
-    except Exception:
-        abort(404)
+        return jsonify({}), 200
 
 
 @app_views.route('/cities/<string:city_id>/places',
@@ -62,6 +61,10 @@ def delPlace(place_id=None):
 def postPlace(city_id=None):
     """ Create a new places by city id
     """
+    place = storage.get('City', city_id)
+    if place is None:
+        abort(404)
+
     if not request.get_json():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     if 'user_id' not in request.get_json():
@@ -84,6 +87,7 @@ def putPlace(place_id=None):
     place = storage.get('Place', place_id)
     if place is None:
         abort(404)
+
     if not request.get_json():
         return make_response(jsonify({'error': 'Not a JSON'}), 400)
     for attr, val in request.get_json().items():
