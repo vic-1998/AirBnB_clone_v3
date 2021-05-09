@@ -12,7 +12,7 @@ from models.place import Place
 from models.user import User
 
 
-@app_views.route('/cities/<city_id>/places',
+@app_views.route('/cities/<string:city_id>/places',
                  methods=['GET'], strict_slashes=False)
 def getPlaces(city_id=None):
     """get all places
@@ -62,28 +62,24 @@ def delPlace(place_id=None):
 def postPlace(city_id=None):
     """ Create a new places by city id
     """
-    place = storage.get('City', city_id)
-    if place is None:
+    cities = storage.get('City', city_id)
+    if not cities:
         abort(404)
-    res = request.get_json()
-    if res is None:
-        abort(400, 'Not a JSON')
-
-    user = res.get('user_id')
-    if user is None:
-        abort(400, "Missing user_id")
-
-    check = set()
-    for i in storage.all('User').values():
-        check.add(i.id)
-    if user not in check:
+    place = request.get_json()
+    if not place:
+        abort(400, {'Not a JSON'})
+    if 'user_id' not in place.keys():
+        abort(400, {'Missing user_id'})
+    userid = storage.get('User', place['user_id'])
+    if not userid:
         abort(404)
-
-    res['city_id'] = city_id
-    newPlace = Place(**res)
-    storage.new(newPlace)
-    place.save()
-    return jsonify(place.to_dict()), 201
+    if 'name' not in place:
+        abort(400, {'Missing name'})
+    new_place = Place(**place)
+    new_place.city_id = city_id
+    storage.new(new_place)
+    storage.save()
+    return make_response(jsonify(new_place.to_dict()), 201)
 
 
 @app_views.route('/places/<string:place_id>',
