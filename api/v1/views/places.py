@@ -14,7 +14,7 @@ from models.user import User
 
 @app_views.route('/cities/<city_id>/places',
                  methods=['GET'], strict_slashes=False)
-def getPlaces(city_id=None):
+def getPlaces(city_id):
     """get all places
     """
     if city_id is None:
@@ -27,34 +27,33 @@ def getPlaces(city_id=None):
 
 @app_views.route('/places/<string:place_id>',
                  methods=['GET'], strict_slashes=False)
-def getPlaceId(place_id=None):
+def getPlaceId(place_id):
     """get a place by id
 
     Args:
         place_id ([string]): [place id information]
     """
     place = storage.get('Place', place_id)
-    if place is None:
+    if not place:
         abort(404)
-    else:
-        return jsonify(place.to_dict())
+    return jsonify(place.to_dict())
 
 
 @app_views.route('/places/<string:place_id>',
                  methods=['DELETE'], strict_slashes=False)
-def delPlace(place_id=None):
+def delPlace(place_id):
     """[delete a place]
 
     Args:
         place_id ([string]): [identifier of place]
     """
-    json_places = storage.get('Place', place_id)
-    if json_places is None:
-        abort(404)
-    else:
-        json_places.delete()
+    place = storage.get("Review", place_id)
+    if place:
+        place.delete()
         storage.save()
-        return jsonify({}), 200
+        return {}, 200
+    else:
+        abort(404)
 
 
 @app_views.route('/cities/<string:city_id>/places',
@@ -88,21 +87,23 @@ def postPlace(city_id=None):
 
 @app_views.route('/places/<string:place_id>',
                  methods=['PUT'], strict_slashes=False)
-def putPlace(place_id=None):
+def putPlace(place_id):
     """update a place by id
 
     Args:
         place_id ([strings]): [identifier of place]
     """
-    place = storage.get('Place', place_id)
-    if place is None:
+    places = storage.get('Place', place_id)
+    if not places:
         abort(404)
 
-    if not request.get_json():
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    for attr, val in request.get_json().items():
-        if attr not in ['id', 'user_id', 'city_id',
-                        'created_at', 'updated_at']:
-            setattr(place, attr, val)
+    place = request.get_json()
+    if place is None:
+        return "Not a JSON", 400
+
+    tables = ['id', 'user_id', 'city_id', 'created_at', 'updated_at']
+    for key, value in place.items():
+        if key not in tables:
+            setattr(places, key, value)
     storage.save()
-    return jsonify(place.to_dict()), 200
+    return make_response(jsonify(places.to_dict()), 200)
