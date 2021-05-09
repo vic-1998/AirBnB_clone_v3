@@ -9,11 +9,11 @@ from models.user import User
 from models.place import Place
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['GET'],
+@app_views.route('/places/<string:place_id>/reviews', methods=['GET'],
                  strict_slashes=False)
 def getReviews(place_id):
     """Get a Reviews"""
-    place = storage.get(Place, place_id)
+    place = storage.get("Place", place_id)
     if place is None:
         abort(404)
     reviews = []
@@ -22,22 +22,22 @@ def getReviews(place_id):
     return jsonify(reviews)
 
 
-@app_views.route('/reviews/<review_id>', methods=['GET'],
+@app_views.route('/reviews/<string:review_id>', methods=['GET'],
                  strict_slashes=False)
 def getReviewId(review_id):
     """get a reviews"""
-    review = storage.get(Review, review_id)
+    review = storage.get("Review", review_id)
     if review:
         return jsonify(review.to_dict())
     else:
         abort(404)
 
 
-@app_views.route('/reviews/<review_id>', methods=['DELETE'],
+@app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
                  strict_slashes=False)
 def deleteReviewId(review_id):
     """deletes a state"""
-    review = storage.get(Review, review_id)
+    review = storage.get("Review", review_id)
     if review:
         storage.delete(review)
         storage.save()
@@ -46,14 +46,14 @@ def deleteReviewId(review_id):
         abort(404)
 
 
-@app_views.route('/places/<place_id>/reviews', methods=['POST'],
+@app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
                  strict_slashes=False)
 def post_review(place_id):
     """create a new review"""
     data = request.get_json()
     if data is None:
         return "Not a JSON", 400
-    place = storage.get(Place, place_id)
+    place = storage.get("Place", place_id)
     if not place:
         abort(404)
     if data.get('user_id') is None:
@@ -76,7 +76,7 @@ def put_review(review_id):
     """update a review"""
     if request.get_json() is None:
         return "Not a JSON", 400
-    review = storage.get(Review, review_id)
+    review = storage.get("Review", review_id)
     if review is None:
         abort(404)
     tables = ['id', 'user_id', 'place_id', 'created_at', 'updated_at']
