@@ -3,6 +3,7 @@
 
 from api.v1.views import app_views
 from flask import abort, jsonify, make_response, request
+import models
 from models import storage
 from models.review import Review
 from models.user import User
@@ -37,13 +38,13 @@ def getReviewId(review_id):
                  strict_slashes=False)
 def deleteReviewId(review_id):
     """deletes a state"""
-    review = storage.get("Review", review_id)
-    if review:
-        storage.delete(review)
-        storage.save()
-        return jsonify({}), 200
-    else:
-        abort(404)
+    review = models.storage.all(Review)
+    for key, value in review.items():
+        if value.id == review_id:
+            models.storage.delete(value)
+            models.storage.save()
+            return jsonify({}), 200
+    return jsonify(error='Not found'), 404
 
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
