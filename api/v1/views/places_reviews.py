@@ -18,8 +18,8 @@ def getReviews(place_id):
     if place is None:
         abort(404)
     reviews = []
-    for review in place.reviews:
-        reviews.append(review.to_dict())
+    for data in place.reviews:
+        reviews.append(data.to_dict())
     return jsonify(reviews)
 
 
@@ -29,9 +29,9 @@ def getReviewId(review_id):
     """get a reviews"""
     review = storage.get("Review", review_id)
     if review:
-        abort(404)
-    else:
         return jsonify(review.to_dict())
+    else:
+        abort(404)
 
 
 @app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
@@ -39,36 +39,33 @@ def getReviewId(review_id):
 def deleteReviewId(review_id):
     """deletes a state"""
     review = storage.get("Review", review_id)
-    if review is None:
-        abort(404)
-    else:
+    if review:
         review.delete()
         storage.save()
-        return jsonify({}), 200
+        return {}, 200
+    else:
+        abort(404)
 
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
                  strict_slashes=False)
 def postReviewId(place_id):
     """create a new review"""
+    if storage.get("Place", place_id) is None:
+        abort(404)
     data = request.get_json()
     if data is None:
-        return "Not a JSON", 400
-    place = storage.get(Place, place_id)
-    if not place:
+        return(make_response('Not a JSON', 400))
+    if 'user_id' not in data:
+        abort(400, 'Missing user_id')
+    if storage.get(User, data['user_id']) is None:
         abort(404)
-    if data.get('user_id') is None:
-        return "Missing user_id", 400
-    user = storage.get(User, request.get_json()['user_id'])
-    if not user:
-        abort(404)
-    if data.get('text') is None:
-        return "Missing text", 400
-    else:
-        review = Review(**data)
-        review.place_id = place_id
-        review.save()
-    return jsonify(review.to_dict()), 201
+    if 'text' not in data:
+        abort(400, 'Missing text')
+    data['place_id'] = place_id
+    review = Review(**data)
+    storage.save()
+    return(make_response(jsonify(review.to_dict()), 201))
 
 
 @app_views.route('/reviews/<string:review_id>', methods=['PUT'],
