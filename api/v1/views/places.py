@@ -87,23 +87,21 @@ def postPlace(city_id=None):
 
 @app_views.route('/places/<string:place_id>',
                  methods=['PUT'], strict_slashes=False)
-def putPlace(place_id):
+def putPlace(place_id=None):
     """update a place by id
 
     Args:
         place_id ([strings]): [identifier of place]
     """
-    places = storage.get('Place', place_id)
-    if not places:
+    place = storage.get('Place', place_id)
+    if not place:
         abort(404)
 
-    place = request.get_json()
-    if place is None:
-        return "Not a JSON", 400
-
-    tables = ['id', 'user_id', 'city_id', 'created_at', 'updated_at']
-    for key, value in place.items():
-        if key not in tables:
-            setattr(places, key, value)
+    if not request.get_json():
+        return make_response(jsonify({'error': 'Not a JSON'}), 400)
+    for attr, val in request.get_json().items():
+        if attr not in ['id', 'user_id', 'city_id',
+                        'created_at', 'updated_at']:
+            setattr(place, attr, val)
     storage.save()
-    return make_response(jsonify(places.to_dict()), 200)
+    return jsonify(place.to_dict()), 200
