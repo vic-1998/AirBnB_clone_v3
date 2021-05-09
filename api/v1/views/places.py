@@ -64,16 +64,25 @@ def postPlace(city_id=None):
     place = storage.get('City', city_id)
     if place is None:
         abort(404)
+    res = request.get_json()
+    if res is None:
+        abort(400, 'Not a JSON')
 
-    if not request.get_json():
-        return make_response(jsonify({'error': 'Not a JSON'}), 400)
-    if 'user_id' not in request.get_json():
-        return make_response(jsonify({'error': 'Missing name'}), 400)
-    if 'name' not in request.get_json():
-        return make_response(jsonify({'error': 'Missing name'}), 400)
-    place = Place(**request.get_json())
+    user = res.get('user_id')
+    if user is None:
+        abort(400, "Missing user_id")
+
+    check = set()
+    for i in storage.all('User').values():
+        check.add(i.id)
+    if user not in check:
+        abort(404)
+
+    res['city_id'] = city_id
+    newPlace = Place(**res)
+    storage.new(newPlace)
     place.save()
-    return make_response(jsonify(place.to_dict()), 201)
+    return jsonify(place.to_dict()), 201
 
 
 @app_views.route('/places/<string:place_id>',
