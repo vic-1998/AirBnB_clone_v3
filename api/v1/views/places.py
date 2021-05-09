@@ -5,13 +5,14 @@ Places Viewer
 """
 
 from api.v1.views import app_views
-from flask import request, jsonify, abort
-from flask import make_response
+from flask import abort, jsonify, make_response, request
 from models import storage
+from models.city import City
 from models.place import Place
+from models.user import User
 
 
-@app_views.route('cities/<city_id>/places',
+@app_views.route('/cities/<city_id>/places',
                  methods=['GET'], strict_slashes=False)
 def getPlaces(city_id=None):
     """get all places
