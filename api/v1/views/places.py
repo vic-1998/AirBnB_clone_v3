@@ -16,6 +16,8 @@ from models.place import Place
 def getPlaces(city_id=None):
     """get all places
     """
+    if city_id is None:
+        abort(404)
     places = []
     for place in storage.all('Place').values():
         places.append(place.to_dict())
