@@ -4,16 +4,16 @@ Places Viewer
 
 """
 
-from flask.helpers import make_response
-from models import storage
-from models import Place
 from api.v1.views import app_views
-from flask import Flask, json, abort, request, jsonify
+from flask import request, jsonify, abort
+from flask import make_response
+from models import storage
+from models.place import Place
 
 
-@app_views.route('/cities/<string:city_id>/places',
+@app_views.route('cities/<city_id>/places',
                  methods=['GET'], strict_slashes=False)
-def getPlaces():
+def getPlaces(city_id=None):
     """get all places
     """
     places = []
@@ -24,7 +24,7 @@ def getPlaces():
 
 @app_views.route('/places/<string:place_id>',
                  methods=['GET'], strict_slashes=False)
-def getPlaceId(place_id):
+def getPlaceId(place_id=None):
     """get a place by id
 
     Args:
@@ -38,7 +38,7 @@ def getPlaceId(place_id):
 
 @app_views.route('/places/<string:place_id>',
                  methods=['DELETE'], strict_slashes=False)
-def delPlace(place_id):
+def delPlace(place_id=None):
     """[delete a place]
 
     Args:
@@ -57,7 +57,7 @@ def delPlace(place_id):
 
 @app_views.route('/cities/<string:city_id>/places',
                  methods=['POST'], strict_slashes=False)
-def postPlace():
+def postPlace(city_id=None):
     """ Create a new places by city id
     """
     if not request.get_json():
@@ -73,7 +73,7 @@ def postPlace():
 
 @app_views.route('/places/<string:place_id>',
                  methods=['PUT'], strict_slashes=False)
-def putPlace(place_id):
+def putPlace(place_id=None):
     """update a place by id
 
     Args:
@@ -88,5 +88,5 @@ def putPlace(place_id):
         if attr not in ['id', 'user_id', 'city_id',
                         'created_at', 'updated_at']:
             setattr(place, attr, val)
-    place.save()
+    storage.save()
     return jsonify(place.to_dict()), 200
