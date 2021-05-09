@@ -77,7 +77,7 @@ def putPlace(place_id=None):
     """update a place by id
 
     Args:
-        place_id ([string]): [identifier of place]
+        place_id ([strings]): [identifier of place]
     """
     place = storage.get('Place', place_id)
     if place is None:
