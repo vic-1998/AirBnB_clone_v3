@@ -29,9 +29,9 @@ def getReviewId(review_id):
     """get a reviews"""
     review = storage.get("Review", review_id)
     if review:
-        return jsonify(review.to_dict())
-    else:
         abort(404)
+    else:
+        return jsonify(review.to_dict())
 
 
 @app_views.route('/reviews/<string:review_id>', methods=['DELETE'],
@@ -39,12 +39,12 @@ def getReviewId(review_id):
 def deleteReviewId(review_id):
     """deletes a state"""
     review = storage.get("Review", review_id)
-    if review:
+    if review is None:
+        abort(404)
+    else:
         review.delete()
         storage.save()
-        return {}, 200
-    else:
-        abort(404)
+        return jsonify({}), 200
 
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
