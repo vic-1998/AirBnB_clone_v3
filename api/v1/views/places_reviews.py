@@ -38,13 +38,13 @@ def getReviewId(review_id):
                  strict_slashes=False)
 def deleteReviewId(review_id):
     """deletes a state"""
-    review = models.storage.all(Review)
-    for key, value in review.items():
-        if value.id == review_id:
-            models.storage.delete(value)
-            models.storage.save()
-            return jsonify({}), 200
-    return jsonify(error='Not found'), 404
+    review = storage.get("Review", review_id)
+    if review:
+        review.delete()
+        storage.save()
+        return {}, 200
+    else:
+        abort(404)
 
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
@@ -64,7 +64,7 @@ def postReviewId(place_id):
         abort(400, 'Missing text')
     data['place_id'] = place_id
     review = Review(**data)
-    review.save()
+    storage.save()
     return(make_response(jsonify(review.to_dict()), 201))
 
 
@@ -72,14 +72,14 @@ def postReviewId(place_id):
                  strict_slashes=False)
 def putReviewId(review_id):
     """update a review"""
-    if request.get_json() is None:
-        return "Not a JSON", 400
     review = storage.get("Review", review_id)
     if review is None:
         abort(404)
+    if request.get_json() is None:
+        return "Not a JSON", 400
     tables = ['id', 'user_id', 'place_id', 'created_at', 'updated_at']
     for attr, val in request.get_json().items():
         if attr not in tables:
             setattr(review, attr, val)
-    review.save()
+    storage.save()
     return jsonify(review.to_dict()), 200
