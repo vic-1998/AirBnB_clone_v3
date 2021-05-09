@@ -48,7 +48,7 @@ def deleteReviewId(review_id):
 
 @app_views.route('/places/<string:place_id>/reviews', methods=['POST'],
                  strict_slashes=False)
-def post_review(place_id):
+def postReviewId(place_id):
     """create a new review"""
     data = request.get_json()
     if data is None:
@@ -72,7 +72,7 @@ def post_review(place_id):
 
 @app_views.route('/reviews/<string:review_id>', methods=['PUT'],
                  strict_slashes=False)
-def put_review(review_id):
+def putReviewId(review_id):
     """update a review"""
     if request.get_json() is None:
         return "Not a JSON", 400
