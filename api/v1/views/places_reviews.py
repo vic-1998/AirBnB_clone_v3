@@ -57,7 +57,7 @@ def postReviewId(place_id=None):
     places = request.get_json()
     if 'user_id' not in places:
         return make_response(jsonify({'error': 'Missing user_id'}), 400)
-    user = storage.get("User", places['user_id'])
+    user = storage.get(User, places['user_id'])
     if user is None:
         abort(404)
     if 'text' not in places:
