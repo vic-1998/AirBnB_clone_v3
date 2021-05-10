@@ -20,7 +20,7 @@ def getStates():
                  strict_slashes=False)
 def getStatesId(state_id):
     """delete a new state"""
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if state is None:
         abort(404)
     return jsonify(state.to_dict())
@@ -33,7 +33,7 @@ def delstate(state_id):
     empty_dict = {}
 
     try:
-        json_states = storage.get("State", state_id)
+        json_states = storage.get(State, state_id)
         json_states.delete()
         storage.save()
         return jsonify(empty_dict), 200
@@ -57,7 +57,7 @@ def postState():
                  strict_slashes=False)
 def putState(state_id):
     """update a state"""
-    state = storage.get("State", state_id)
+    state = storage.get(State, state_id)
     if state is None:
         abort(404)
     if not request.get_json():
