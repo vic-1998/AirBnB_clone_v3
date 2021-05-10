@@ -71,7 +71,7 @@ def postPlace(city_id=None):
         abort(400, {'Not a JSON'})
     if 'user_id' not in place.keys():
         abort(400, {'Missing user_id'})
-    userid = storage.get('User', place['user_id'])
+    userid = storage.get(User, place['user_id'])
     if not userid:
         abort(404)
     if 'name' not in place:
