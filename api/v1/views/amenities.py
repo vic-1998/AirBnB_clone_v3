@@ -19,7 +19,7 @@ def getAmenity():
                  strict_slashes=False)
 def getAmenityId(amenity_id):
     """delete a new amenities"""
-    amenities = storage.get("Amenity", amenity_id)
+    amenities = storage.get(Amenity, amenity_id)
     if amenities is None:
         abort(404)
     return jsonify(amenities.to_dict())
@@ -32,7 +32,7 @@ def delAmenity(amenity_id):
     empty_dict = {}
 
     try:
-        json_ameni = storage.get("Amenity", amenity_id)
+        json_ameni = storage.get(Amenity, amenity_id)
         json_ameni.delete()
         storage.save()
         return jsonify(empty_dict), 200
@@ -56,7 +56,7 @@ def postAmenity():
                  strict_slashes=False)
 def putAmenity(amenity_id):
     """update a amenities"""
-    amenities = storage.get("Amenity", amenity_id)
+    amenities = storage.get(Amenity, amenity_id)
     if amenities is None:
         abort(404)
     if not request.get_json():
