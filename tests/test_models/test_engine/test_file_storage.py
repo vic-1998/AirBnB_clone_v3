@@ -70,6 +70,15 @@ test_file_storage.py'])
 
 class TestFileStorage(unittest.TestCase):
     """Test the FileStorage class"""
+
+    def tearDown(self):
+        """set enviroment when testing is finished"""
+        # Empty objects in engine
+        FileStorage._FileStorage__objects = {}
+        # Remove file.json if exists
+        if os.path.exists("file.json"):
+            os.remove("file.json")
+
     @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_all_returns_dict(self):
         """Test that all returns the FileStorage.__objects attr"""
@@ -114,27 +123,28 @@ class TestFileStorage(unittest.TestCase):
             js = f.read()
         self.assertEqual(json.loads(string), json.loads(js))
 
-
-class TestDBStorage(unittest.TestCase):
-    """Test the DBStorage class"""
-
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "not testing db storage")
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_get(self):
-        """Test that get returns specific object, or none"""
-        new_state = State(name='STATE')
-        models.storage.new(new_state)
-        models.storage.save()
-        get = models.storage.get(State, new_state.id)
-        self.assertTrue(get)
+        """Test get method"""
+        state_1 = State()
+        storage = FileStorage()
+        state_1.save()
+        get_obj = storage.get(State, state_1.id)
+        self.assertEqual(get_obj.id, state_1.id)
+        get_obj = storage.get(State, "257972592")
+        self.assertEqual(get_obj, None)
 
-    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') != 'db',
-                     "not testing db storage")
+    @unittest.skipIf(models.storage_t == 'db', "not testing file storage")
     def test_count(self):
-        """test that new adds an object to the database"""
-        count = models.storage.count()
-        new_state = State(name='STATE2')
-        models.storage.new(new_state)
-        models.storage.save()
-        new_count = models.storage.count()
-        self.assertNotEqual(count, new_count)
+        """Test count method"""
+        state_1 = State()
+        storage = FileStorage()
+        state_1.save()
+        objs = storage.all()
+        numbers = storage.count()
+        self.assertEqual(numbers, len(objs))
+        state_2 = State()
+        state_2.save()
+        objs = storage.all()
+        numbers_state = storage.count(State)
+        self.assertEqual(numbers_state, len(objs))
