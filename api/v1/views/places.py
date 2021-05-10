@@ -17,7 +17,7 @@ from models.user import User
 def getPlaces(city_id=None):
     """get all places
     """
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if city is None:
         abort(404)
     places = []
@@ -34,7 +34,7 @@ def getPlaceId(place_id=None):
     Args:
         place_id ([string]): [place id information]
     """
-    place = storage.get('Place', place_id)
+    place = storage.get(Place, place_id)
     if place is None:
         abort(404)
     else:
@@ -49,7 +49,7 @@ def delPlace(place_id=None):
     Args:
         place_id ([string]): [identifier of place]
     """
-    json_places = storage.get('Place', place_id)
+    json_places = storage.get(Place, place_id)
     if json_places is None:
         abort(404)
     else:
@@ -63,7 +63,7 @@ def delPlace(place_id=None):
 def postPlace(city_id=None):
     """ Create a new places by city id
     """
-    cities = storage.get('City', city_id)
+    cities = storage.get(City, city_id)
     if not cities:
         abort(404)
     place = request.get_json()
@@ -91,7 +91,7 @@ def putPlace(place_id=None):
     Args:
         place_id ([strings]): [identifier of place]
     """
-    place = storage.get('Place', place_id)
+    place = storage.get(Place, place_id)
     if place is None:
         abort(404)
 

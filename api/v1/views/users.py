@@ -20,7 +20,7 @@ def getUser():
                  strict_slashes=False)
 def getUsersId(user_id):
     """delete a new state"""
-    user = storage.get("User", user_id)
+    user = storage.get(User, user_id)
     if user is None:
         abort(404)
     return jsonify(user.to_dict())
@@ -30,7 +30,7 @@ def getUsersId(user_id):
                  strict_slashes=False)
 def delete_user(user_id):
     """deletes a user"""
-    user = storage.get("User", user_id)
+    user = storage.get(User, user_id)
     if user is None:
         abort(404)
     user.delete()
@@ -56,7 +56,7 @@ def post_user():
                  strict_slashes=False)
 def put_user(user_id):
     """update a user"""
-    user = storage.get("User", user_id)
+    user = storage.get(User, user_id)
     if user is None:
         abort(404)
     if not request.get_json():

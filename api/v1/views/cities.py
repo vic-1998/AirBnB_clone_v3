@@ -16,7 +16,7 @@ from models.state import State
 def allCities():
     ''' search all cities'''
     cities = []
-    for city in storage.all("City").values():
+    for city in storage.all(City).values():
         cities.append(city.to_dict())
     return jsonify(cities)
 
@@ -25,7 +25,7 @@ def allCities():
                  methods=['GET'], strict_slashes=False)
 def getCitiesByState(state_id):
     ''' search cities by id '''
-    all_cities = storage.get("State", state_id)
+    all_cities = storage.get(State, state_id)
     if all_cities is None:
         abort(404)
     data = []
@@ -42,7 +42,7 @@ def getCitiesId(city_id):
     Args:
         city_id ([integer]): [id city in DB]
     """
-    cityId = storage.get("City", city_id)
+    cityId = storage.get(City, city_id)
     if cityId is None:
         abort(404)
     return jsonify(cityId.to_dict())
@@ -55,7 +55,7 @@ def delcity(city_id):
     empty_dict = {}
 
     try:
-        json_cities = storage.get("City", city_id)
+        json_cities = storage.get(City, city_id)
         json_cities.delete()
         storage.save()
         return jsonify(empty_dict), 200
@@ -67,7 +67,7 @@ def delcity(city_id):
                  methods=['POST'], strict_slashes=False)
 def postCity(state_id):
     """create a new city"""
-    state = storage.get('State', state_id)
+    state = storage.get(State, state_id)
     if state is None:
         abort(404)
     if not request.get_json():
@@ -85,7 +85,7 @@ def postCity(state_id):
                  strict_slashes=False)
 def putCity(city_id):
     """update a City"""
-    city = storage.get("City", city_id)
+    city = storage.get(City, city_id)
     if city is None:
         abort(404)
     if not request.get_json():
